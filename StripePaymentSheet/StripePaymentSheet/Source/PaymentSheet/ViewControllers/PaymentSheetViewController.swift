@@ -23,6 +23,10 @@ protocol PaymentSheetViewControllerDelegate: AnyObject {
         _ paymentSheetViewController: PaymentSheetViewController,
         result: PaymentSheetResult
     )
+    func paymentSheetViewControllerDidError(
+        _ paymentSheetViewController: PaymentSheetViewController,
+        error: Error
+    )
     func paymentSheetViewControllerDidCancel(
         _ paymentSheetViewController: PaymentSheetViewController
     )
@@ -475,6 +479,9 @@ class PaymentSheetViewController: UIViewController {
                     // Handle error
                     if PaymentSheetError.isUnrecoverable(error: error) {
                         self.delegate?.paymentSheetViewControllerDidFinish(self, result: result)
+                    }
+                    else {
+                        self.delegate?.paymentSheetViewControllerDidError(self, error: error)
                     }
                     self.updateUI()
                     UIAccessibility.post(notification: .layoutChanged, argument: self.errorLabel)
