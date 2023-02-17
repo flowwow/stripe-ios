@@ -39,6 +39,8 @@ public class PaymentSheet {
     /// The most recent error encountered by the customer, if any.
     public private(set) var mostRecentError: Error?
 
+    public var onCardError: ((Error) -> Void)?
+
     /// Initializes a PaymentSheet
     /// - Parameter paymentIntentClientSecret: The [client secret](https://stripe.com/docs/api/payment_intents/object#payment_intent_object-client_secret) of a Stripe PaymentIntent object
     /// - Note: This can be used to complete a payment - don't log it, store it, or expose it to anyone other than the customer.
@@ -304,7 +306,12 @@ extension PaymentSheet: PaymentSheetViewControllerDelegate {
             self.completion?(result)
         }
     }
-
+    
+    func paymentSheetViewControllerDidError(_ paymentSheetViewController: PaymentSheetViewController, error: Error) {
+        debugPrint("Payment Sheet Error: \(error)")
+        onCardError?(error)
+    }
+    
     func paymentSheetViewControllerDidCancel(_ paymentSheetViewController: PaymentSheetViewController) {
         paymentSheetViewController.dismiss(animated: true) {
             self.completion?(.canceled)

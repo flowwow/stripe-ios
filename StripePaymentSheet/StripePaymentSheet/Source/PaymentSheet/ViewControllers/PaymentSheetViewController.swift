@@ -20,6 +20,8 @@ protocol PaymentSheetViewControllerDelegate: AnyObject {
         completion: @escaping (PaymentSheetResult) -> Void)
     func paymentSheetViewControllerDidFinish(
         _ paymentSheetViewController: PaymentSheetViewController, result: PaymentSheetResult)
+    func paymentSheetViewControllerDidError(
+        _ paymentSheetViewController: PaymentSheetViewController, error: Error)
     func paymentSheetViewControllerDidCancel(
         _ paymentSheetViewController: PaymentSheetViewController)
     func paymentSheetViewControllerDidSelectPayWithLink(
@@ -466,6 +468,9 @@ class PaymentSheetViewController: UIViewController {
                     // Handle error
                     if PaymentSheetError.isUnrecoverable(error: error) {
                         self.delegate?.paymentSheetViewControllerDidFinish(self, result: result)
+                    }
+                    else {
+                        self.delegate?.paymentSheetViewControllerDidError(self, error: error)
                     }
                     self.updateUI()
                     UIAccessibility.post(notification: .layoutChanged, argument: self.errorLabel)
